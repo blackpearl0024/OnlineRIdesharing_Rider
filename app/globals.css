@@ -1,8 +1,11 @@
+@import url('https://unpkg.com/leaflet/dist/leaflet.css');
+@import './styles.css';
+
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -14,8 +17,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ededed;
+    --foreground: #0a0a0a;
   }
 }
 
@@ -24,3 +27,56 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #1f2937; /* dark gray */
+  color: rgb(46, 42, 42);
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.sidebar a {
+  color: #090909;
+  text-decoration: none;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #f9fafb;
+}
+
+.profile-info {
+  background: rgb(29, 143, 145);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  justify-content: center;
+  text-align: center;
+  margin-left: 250px;
+}
+label {
+  color: #000000; /* black */
+}
+
