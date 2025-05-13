@@ -10,6 +10,7 @@ import SearchingView from '../components/Booking/SearchingView';
 import DriverInfo from '../components/Booking/DriverInfo';
 import RatingView from '../components/Booking/RatingView';
 import Car from '../components/Booking/Car';
+import { useUser } from '@clerk/nextjs';
 
 export default function Home() {
   const [fromLocation, setFromLocation] = useState({ lat: null, lon: null, name: '' });
@@ -30,6 +31,13 @@ const [driverLocation, setDriverLocation] = useState<{ lat: number | null, lon: 
 
     const [Distance, setDistance] = useState<string>('');
   const [Duration, setDuration] = useState<string>('');
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
+  const [selectedPriority, setSelectedPriority] = useState<string | null>(null);
+
+
+   const { user } = useUser()
+   const D_name = user?.fullName ||'';
+const D_id = user?.id;
 
 
   const stompClientRef = useRef<StompJs.Client | null>(null);
@@ -45,6 +53,13 @@ const [driverLocation, setDriverLocation] = useState<{ lat: number | null, lon: 
       console.warn("STOMP client not connected.");
     }
   };
+
+  useEffect(() => {
+   console.log(rideStarted)
+  console.log('Selected Vehicle:', selectedVehicle);
+          console.log('Selected Priority:', selectedPriority);
+   
+  }, [selectedVehicle,selectedPriority]);
 
   useEffect(() => {
    console.log(rideStarted)
@@ -148,16 +163,16 @@ const [driverLocation, setDriverLocation] = useState<{ lat: number | null, lon: 
     setUiStep('searching'); // ⬅️ Show searching view after button press
     sendObj('/app/createTrip', {
       
-      name:'imaya',
-      id:'1',
+     name: D_name,
+      id:D_id ,
       fromlat: fromLocation.lat,
       fromlon: fromLocation.lon,
       tolat: toLocation.lat,
       tolon:toLocation.lon,
-Distance: parseFloat(Distance),
-Duration: parseFloat(Duration) ,
-      preference: 'LEAST_TIME',
-      Vehiclepreference:'BIKE',
+distance: parseFloat(Distance),
+duration: parseFloat(Duration) ,
+      preference: selectedPriority,
+      Vehiclepreference:selectedVehicle,
     });
   };
 
@@ -179,14 +194,16 @@ Duration: parseFloat(Duration) ,
               setFromLocation={setFromLocation}
               setToLocation={setToLocation}
             /> */}
-            <Booking
-            fromLocation={fromLocation}
-            toLocation={toLocation}
-            setFromLocation={setFromLocation}
-            setToLocation={setToLocation}
-            selectedCarType={selectedCarType}
-            setSelectedCarType={setSelectedCarType}
-           />
+              <Booking
+        fromLocation={fromLocation}
+        toLocation={toLocation}
+        setFromLocation={setFromLocation}
+        setToLocation={setToLocation}
+        selectedVehicle={selectedVehicle}
+        setSelectedVehicle={setSelectedVehicle}
+        selectedPriority={selectedPriority}
+        setSelectedPriority={setSelectedPriority}
+      />
             
 
             <button

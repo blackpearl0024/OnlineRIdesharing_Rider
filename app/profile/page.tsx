@@ -79,12 +79,12 @@ export default function ProfilePage() {
     <div className="container flex text-white">
       <aside className="sidebar w-1/4 bg-gray-800 p-4 min-h-screen">
         <h2 className="text-xl font-bold mb-4">Welcome, {user.firstName || 'Rider'}!</h2>
-        <ul className="space-y-2">
+        {/* <ul className="space-y-2">
           <li><Link href="/home" className="hover:underline">Home</Link></li>
-          <li><Link href="#">Ride History</Link></li>
+          <li><Link href="/history">Ride History</Link></li>
           <li><Link href="/profile" className="font-semibold underline">Profile</Link></li>
           <li><Link href="#">Settings</Link></li>
-        </ul>
+        </ul> */}
       </aside>
 
       <main className="main-content w-3/4 bg-gray-900 p-6">

@@ -1,24 +1,33 @@
+// components/Booking.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import AutocompleteAddress from './AutocompleteAddress';
 import Car from './Car';
 
-
-
 const Booking = ({
   fromLocation,
   toLocation,
   setFromLocation,
   setToLocation,
-  selectedCarType,
-  setSelectedCarType,
-}: any) => {
+  selectedVehicle,
+  setSelectedVehicle,
+  selectedPriority,
+  setSelectedPriority,
+}: {
+  fromLocation: any;
+  toLocation: any;
+  setFromLocation: (location: any) => void;
+  setToLocation: (location: any) => void;
+  selectedVehicle: string | null;
+  setSelectedVehicle: (type: string) => void;
+  selectedPriority: string | null;
+  setSelectedPriority: (type: string) => void;
+}) => {
   const [screenHeight, setScreenHeight] = useState(0);
 
   useEffect(() => {
-    // This code runs only in the browser
-    setScreenHeight(window.innerHeight);
+    setScreenHeight(window.innerHeight * 0.7);
   }, []);
 
   return (
@@ -35,7 +44,12 @@ const Booking = ({
           value={toLocation}
           onChange={setToLocation}
         />
-        <Car selectedType={selectedCarType} setSelectedType={setSelectedCarType} />
+        <Car 
+          selectedVehicle={selectedVehicle}
+          setSelectedVehicle={setSelectedVehicle}
+          selectedPriority={selectedPriority}
+          setSelectedPriority={setSelectedPriority}
+        />
       </div>
     </div>
   );
