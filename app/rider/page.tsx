@@ -11,8 +11,18 @@ import DriverInfo from '../components/Booking/DriverInfo';
 import RatingView from '../components/Booking/RatingView';
 import Car from '../components/Booking/Car';
 import { useUser } from '@clerk/nextjs';
-
+  type FareBreakdown = {
+  baseFare: number;
+  distanceCost: number;
+  timeCost: number;
+  peakMultiplier: number;
+  zoneMultiplier: number;
+  totalFare: number;
+};
 export default function Home() {
+
+const [fareOutput, setFareOutput] = useState<FareBreakdown | null>(null);
+
   const [fromLocation, setFromLocation] = useState({ lat: null, lon: null, name: '' });
   const [toLocation, setToLocation] = useState({ lat: null, lon: null, name: '' });
   const [messages, setMessages] = useState<string[]>([]);
@@ -39,7 +49,9 @@ const [driverLocation, setDriverLocation] = useState<{ lat: number | null, lon: 
    const D_name = user?.fullName ||'';
 const D_id = user?.id;
 
-
+ const [vehicleNumber, setVehicleNumber] = useState<string>('');
+  const [rating, setrating] =useState<number>(0);
+ 
   const stompClientRef = useRef<StompJs.Client | null>(null);
 
   const sendObj = (destination: string, data: any) => {
@@ -54,6 +66,27 @@ const D_id = user?.id;
     }
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return
+  
+      try {
+        const res = await fetch(`/api/user/get?clerkId=${user.id}`) // assumes GET route
+        if (!res.ok) throw new Error('Failed to fetch user data')
+        
+        const data = await res.json()
+        if (data.user) {
+         setVehicleNumber(data.user.vehicleNumber || '') // e.g., "rider" → "Rider"
+          setrating(data.user.rating || '')
+          
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+  
+    fetchUserData()
+  }, [user])
   useEffect(() => {
    console.log(rideStarted)
   console.log('Selected Vehicle:', selectedVehicle);
@@ -138,6 +171,38 @@ const D_id = user?.id;
           }
         });
         
+        client.subscribe('/topic/FareBill', (message) => {
+  try {
+    const data = JSON.parse(message.body);
+    let infoText = null;
+
+    // If server sends the object directly, no need to parse string
+    if (data) {
+      const totalFare = data.totalFare ?? 'Unknown';
+      const baseFare = data.baseFare ?? 'Unknown';
+      const distanceCost = data.distanceCost ?? 'Unknown';
+      const timeCost = data.timeCost ?? 'Unknown';
+      const peakMultiplier = data.peakMultiplier ?? 'Unknown';
+      const zoneMultiplier = data.zoneMultiplier ?? 'Unknown';
+
+      console.log("Fare Breakdown:");
+      console.log("Base Fare:", baseFare);
+      console.log("Distance Cost:", distanceCost);
+      console.log("Time Cost:", timeCost);
+      console.log("Peak Multiplier:", peakMultiplier);
+      console.log("Zone Multiplier:", zoneMultiplier);
+      console.log("Total Fare:", totalFare);
+
+      // Example usage
+      const fareString = `Total Fare: ₹${totalFare}`;
+      setFareOutput(data); // Suppose you store it in React state
+    }
+
+  } catch (err) {
+    console.error("Failed to parse message body:", err);
+  }
+});
+
         
       },
       onDisconnect: () => {
@@ -217,8 +282,16 @@ duration: parseFloat(Duration) ,
 
         {uiStep === 'searching' && <SearchingView />}
 
-        {uiStep === 'driverInfo' && (
-          <DriverInfo name={driverName} fare={fare} stompClient={stompClientRef.current} />
+        {uiStep === 'driverInfo' && fareOutput&&(
+          <DriverInfo 
+            name={driverName} 
+            fare={fare} 
+            fareBreakdown={fareOutput}
+            vehicleNumber={vehicleNumber}
+            rating={rating}
+            stompClient={stompClientRef.current}
+          />
+         
         )}
         {uiStep === 'rating' && (
           <RatingView
