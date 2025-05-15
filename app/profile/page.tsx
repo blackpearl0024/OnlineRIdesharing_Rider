@@ -2,6 +2,17 @@
 
 import { useUser, useClerk } from '@clerk/nextjs'
 import { useEffect, useState } from 'react'
+import {
+  User,
+  History,
+  Settings,
+  LocateIcon,
+  Filter,
+  ChevronRight,
+  UserIcon,
+  HistoryIcon,
+  SettingsIcon
+} from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
@@ -187,139 +198,174 @@ export default function ProfilePage() {
   if (!isLoaded || !user) return <div>Loading...</div>
 
   return (
-    <div className="container flex text-white">
-      <aside className="sidebar w-1/4 bg-gray-800 p-4 min-h-screen">
-        <h2 className="text-xl font-bold mb-4">Welcome, {user.firstName || 'User'}!</h2>
-      </aside>
+    <div className="flex min-h-screen bg-gray-100">
+  {/* Sidebar */}
+  <aside className="w-64 bg-gradient-to-b from-blue-800 to-blue-900 p-6 text-white shadow-lg">
+    <div className="flex items-center space-x-3 mb-8">
+      <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-xl font-bold">
+        {user.firstName?.charAt(0) || 'U'}
+      </div>
+      <div>
+        <h2 className="text-xl font-bold">Welcome back,</h2>
+        <p className="text-blue-200">{user.firstName || 'User'}</p>
+      </div>
+    </div>
+    
+    <nav className="space-y-2">
+      <button className="w-full text-left px-4 py-3 bg-blue-700 rounded-lg font-medium flex items-center">
+        <UserIcon className="mr-3" />
+        Profile
+      </button>
+      <button className="w-full text-left px-4 py-3 hover:bg-blue-700 rounded-lg font-medium flex items-center">
+        <HistoryIcon className="mr-3" />
+        Trip History
+      </button>
+      <button className="w-full text-left px-4 py-3 hover:bg-blue-700 rounded-lg font-medium flex items-center">
+        <SettingsIcon className="mr-3" />
+        Settings
+      </button>
+    </nav>
+  </aside>
 
-      <main className="main-content w-3/4 bg-gray-900 p-6">
-        <h1 className="text-2xl font-bold mb-6">Your Profile</h1>
-
-        <div className="profile-info space-y-6">
-          {/* Existing profile fields... */}
-
-          <div>
-            <label className="block font-medium mb-1">Full Name:</label>
-            <input
-              type="text"
-              value={user.fullName || ''}
-              readOnly
-              className="w-full bg-gray-800 p-2 rounded text-white border border-gray-600"
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">Email:</label>
-            <input
-              type="text"
-              value={user.primaryEmailAddress?.emailAddress || ''}
-              readOnly
-              className="w-full bg-gray-800 p-2 rounded text-white border border-gray-600"
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">Date of Birth:</label>
-            <input
-              type="date"
-              value={birthday}
-              onChange={(e) => setBirthday(e.target.value)}
-              className="w-full bg-gray-800 p-2 rounded text-white border border-gray-600"
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">User Type:</label>
-            <select
-              value={userType}
-              onChange={(e) => setUserType(e.target.value)}
-              className="w-full bg-gray-800 p-2 rounded text-white border border-gray-600"
-            >
-              <option value="Rider">Rider</option>
-              <option value="Driver">Driver</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">Home Location:</label>
-            <input
-              type="text"
-              value={homeLocation}
-              onChange={(e) => setHomeLocation(e.target.value)}
-              className="w-full bg-gray-800 p-2 rounded text-white border border-gray-600"
-            />
-          </div>
-
-          <button
-            onClick={handleSaveChanges}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-          >
-            Save Changes
+  {/* Main Content */}
+  <main className="flex-1 p-8">
+    <div className="max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Profile Settings</h1>
+        <div className="flex space-x-3">
+          <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+            Edit Profile
           </button>
-        
-          {/* Wallet Section */}
-          <div className="wallet-section border-t border-gray-700 pt-6">
-            <h2 className="text-xl font-bold mb-4">Wallet</h2>
-            
-            {walletError && (
-              <div className="mb-4 p-3 bg-red-900 text-red-100 rounded">
-                {walletError}
-              </div>
-            )}
+        </div>
+      </div>
 
-            {walletBalance === null ? (
-              <div className="mb-4">
-                <p className="mb-2">You don't have a wallet yet.</p>
-                <button
-                  onClick={handleCreateWallet}
-                  disabled={isProcessing}
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded disabled:opacity-50"
-                >
-                  {isProcessing ? 'Creating...' : 'Create Wallet'}
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="balance-display bg-gray-800 p-4 rounded-lg">
-                  <h3 className="font-medium mb-1">Current Balance:</h3>
-                  <p className="text-2xl font-bold">₹{walletBalance.toFixed(2)}</p>
-                </div>
+      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        {/* Personal Information */}
+        <div className="p-6 border-b">
+          <h2 className="text-xl font-semibold mb-6 text-gray-800">Personal Information</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <input
+                type="text"
+                value={user.fullName || ''}
+                readOnly
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
-                <div className="add-money-form">
-                  <h3 className="font-medium mb-2">Add Money to Wallet</h3>
-                  <div className="gap-10">
-                    <input
-                      type="number"
-                      value={addAmount}
-                      onChange={(e) => setAddAmount(e.target.value)}
-                      placeholder="Enter amount"
-                      className="flex-5 bg-gray-800 p-2 rounded text-white border border-gray-600"
-                      min="1"
-                      step="0.01"
-                    />
-                    <button
-                      onClick={handleAddMoney}
-                      disabled={isProcessing || !addAmount}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded disabled:opacity-50"
-                    >
-                      {isProcessing ? 'Adding...' : 'Add Money'}
-                    </button>
-                  </div>
-                  <p className="text-sm text-gray-400 mt-1">Minimum amount: ₹1.00</p>
-                </div>
-              </div>
-            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                type="text"
+                value={user.primaryEmailAddress?.emailAddress || ''}
+                readOnly
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+              <input
+                type="date"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">User Type</label>
+              <select
+                value={userType}
+                onChange={(e) => setUserType(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="Rider">Rider</option>
+                <option value="Driver">Driver</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Home Location</label>
+              <input
+                type="text"
+                value={homeLocation}
+                onChange={(e) => setHomeLocation(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
           </div>
+        </div>
 
+        {/* Wallet Section */}
+        <div className="p-6">
+          <h2 className="text-xl font-semibold mb-6 text-gray-800">Wallet</h2>
+          
+          {walletError && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+              <p>{walletError}</p>
+            </div>
+          )}
+
+          {walletBalance === null ? (
+            <div className="bg-gray-50 p-6 rounded-lg text-center">
+              <p className="mb-4 text-gray-600">You don't have a wallet yet.</p>
+              <button
+                onClick={handleCreateWallet}
+                disabled={isProcessing}
+                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isProcessing ? 'Creating...' : 'Create Wallet'}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
+                <h3 className="text-sm font-medium text-blue-800 mb-1">CURRENT BALANCE</h3>
+                <p className="text-3xl font-bold text-blue-900">₹{walletBalance.toFixed(2)}</p>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-medium text-gray-800 mb-4">Add Money</h3>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <input
+                    type="number"
+                    value={addAmount}
+                    onChange={(e) => setAddAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="1"
+                    step="0.01"
+                  />
+                  <button
+                    onClick={handleAddMoney}
+                    disabled={isProcessing || !addAmount}
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isProcessing ? 'Processing...' : 'Add Money'}
+                  </button>
+                </div>
+                <p className="mt-2 text-sm text-gray-500">Minimum amount: ₹1.00</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Save Button */}
+        <div className="p-6 bg-gray-50 border-t">
           <button
             onClick={handleSaveChanges}
-            className="mt-4 bg-red-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-colors"
           >
             Save Changes
           </button>
         </div>
-      </main>
+      </div>
     </div>
+  </main>
+</div>
   )
 }

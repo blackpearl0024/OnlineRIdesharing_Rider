@@ -15,6 +15,7 @@ type FareBreakdown = {
 
 type DriverInfoProps = {
   name: string;
+  id: string;
     fareBreakdown: FareBreakdown;
   fare: number;
   vehicleNumber?: string;
@@ -22,7 +23,7 @@ type DriverInfoProps = {
   stompClient: StompJs.Client | null;
 };
 
-export default function DriverInfo({ name,fareBreakdown, fare, vehicleNumber, rating = 4.5, stompClient }: DriverInfoProps) {
+export default function DriverInfo({ name,id,fareBreakdown, fare, vehicleNumber, rating = 4.5, stompClient }: DriverInfoProps) {
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'processing' | 'completed'>('pending');
   const [tripStatus, setTripStatus] = useState<'ongoing' | 'completed'>('ongoing');
 
@@ -151,9 +152,12 @@ export default function DriverInfo({ name,fareBreakdown, fare, vehicleNumber, ra
           </button>
         ) : paymentStatus !== 'completed' ? (
           <PaymentButton //add driver id and name
-            fare={fare} 
+          
+          fare={fare} 
             stompClient={stompClient} 
             onSuccess={handlePaymentSuccess}
+            driverId={id}
+            driverName={name}  
             className="w-full"
           />
         ) : (

@@ -11,6 +11,8 @@ import DriverInfo from '../components/Booking/DriverInfo';
 import RatingView from '../components/Booking/RatingView';
 import Car from '../components/Booking/Car';
 import { useUser } from '@clerk/nextjs';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
   type FareBreakdown = {
   baseFare: number;
   distanceCost: number;
@@ -44,8 +46,11 @@ const [driverLocation, setDriverLocation] = useState<{ lat: number | null, lon: 
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
   const [selectedPriority, setSelectedPriority] = useState<string | null>(null);
 
+  const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
+  const [profileComplete, setProfileComplete] = useState(false);
 
-   const { user } = useUser()
+  const { user, isLoaded } = useUser();
    const D_name = user?.fullName ||'';
 const D_id = user?.id;
 
@@ -221,6 +226,70 @@ const D_id = user?.id;
     };
   }, []);
 
+  
+  
+  useEffect(() => {
+    const checkProfile = async () => {
+      if (!user || !isLoaded) return;
+      
+      setIsChecking(true);
+      try {
+        const res = await fetch(`/api/user/check?clerkId=${user.id}`);
+        const data = await res.json();
+
+        if (data.error) {
+          console.error(data.error);
+          return;
+        }
+
+        if (!data.profileExists || !data.walletExists) {
+          // Redirect to profile page if profile or wallet is missing
+          router.push('/profile');
+          return;
+        }
+
+        setProfileComplete(true);
+      } catch (error) {
+        console.error('Failed to check profile:', error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkProfile();
+  }, [user, isLoaded, router]);
+
+  if (!isLoaded || isChecking) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-lg">Checking your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profileComplete) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center p-6 max-w-md bg-white rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Profile Incomplete</h2>
+          <p className="text-gray-600 mb-6">
+            Please complete your profile and set up your wallet to continue.
+          </p>
+          <Link
+            href="/profile"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+          >
+            Go to Profile
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+
   const handleCreateTrip = () => {
     console.log("button is pressed")
     console.log("fromlat:" + fromLocation.lat +
@@ -285,6 +354,7 @@ duration: parseFloat(Duration) ,
         {uiStep === 'driverInfo' && fareOutput&&(
           <DriverInfo 
             name={driverName} 
+            id={driverId}
             fare={fare} 
             fareBreakdown={fareOutput}
             vehicleNumber={vehicleNumber}

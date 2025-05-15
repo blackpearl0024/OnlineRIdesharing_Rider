@@ -1,19 +1,36 @@
-import React from 'react'
-import {UserButton} from '@clerk/nextjs'
-import Link from 'next/link'
+import React from 'react';
+import { UserButton } from '@clerk/nextjs';
+import Link from 'next/link';
+
 export default function NavBar() {
   return (
-    <div className='flex justify-between p-3 px-10'>
-    <div className='flex gap-6'>
+   <header className="bg-white shadow-sm w-full h-auto">
 
-    <nav className="bg-gray-100 p-4 shadow-md flex items-center justify-start gap-6">
-  <Link className="text-gray-700 font-medium rounded-md px-4 py-2 transition-all hover:bg-gray-200 hover:text-black" href="/">Home</Link>
-  <Link className="text-gray-700 font-medium rounded-md px-4 py-2 transition-all hover:bg-gray-200 hover:text-black" href="/profile">Profile</Link>
-  <Link className="text-gray-700 font-medium rounded-md px-4 py-2 transition-all hover:bg-gray-200 hover:text-black" href="#">History</Link>
-</nav>
-
-    </div>
-    <UserButton />
-    </div>
-  )
+      <div className="p-3 px-10 flex justify-between items-center">
+        <nav className="flex items-center space-x-1">
+          <Link 
+            className="text-gray-700 font-medium rounded-md px-4 py-2 transition-all hover:bg-gray-100 hover:text-blue-600" 
+            href="/"
+          >
+            Home
+          </Link>
+          <Link 
+            className="text-gray-700 font-medium rounded-md px-4 py-2 transition-all hover:bg-gray-100 hover:text-blue-600" 
+            href="/profile"
+          >
+            Profile
+          </Link>
+          <Link 
+            className="text-gray-700 font-medium rounded-md px-4 py-2 transition-all hover:bg-gray-100 hover:text-blue-600" 
+            href="/history"
+          >
+            History
+          </Link>
+        </nav>
+        <div className="flex items-center">
+          <UserButton afterSignOutUrl="/" />
+        </div>
+      </div>
+    </header>
+  );
 }

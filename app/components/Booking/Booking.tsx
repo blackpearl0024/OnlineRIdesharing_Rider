@@ -31,16 +31,17 @@ const Booking = ({
   }, []);
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Booking</h2>
-      <div className="border-[1px] p-5 rounded-md" style={{ height: screenHeight }}>
+  <div className="space-y-6">
+    <h2 className="text-2xl font-bold text-gray-800">Book Your Ride</h2>
+    <div className="border border-gray-200 p-6 rounded-lg bg-white shadow-sm">
+      <div className="space-y-4">
         <AutocompleteAddress
-          label="Where from?"
+          label="Pickup Location"
           value={fromLocation}
           onChange={setFromLocation}
         />
         <AutocompleteAddress
-          label="Where to?"
+          label="Destination"
           value={toLocation}
           onChange={setToLocation}
         />
@@ -52,7 +53,8 @@ const Booking = ({
         />
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Booking;
